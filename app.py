@@ -9,11 +9,10 @@ import os
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-
 # database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(
+                                         basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 
 # initialize database
 db = SQLAlchemy(app)
@@ -50,17 +49,36 @@ products_schema = ProductSchema(many=True)
 # create a product
 @app.route('/product', methods=['POST'])
 def add_product():
+    # parameters
+    name = request.json['name']
+    description = request.json['description']
+    price = request.json['price']
+    quantity = request.json['quantity']
+    # create a product object
+    new_product = Product(name, description, price, quantity)
+    # submit to the sql data
+    db.session.add(new_product)
+    db.session.commit()
+    return product_schema.jsonify(new_product)
+
+
+# update a product
+@app.route('/product/<id>', methods=['PUT'])
+def update_product(id):
+    product = Product.query.get(id)
+
     name = request.json['name']
     description = request.json['description']
     price = request.json['price']
     quantity = request.json['quantity']
 
-    new_product = Product(name, description, price, quantity)
+    product.name = name
+    product.description = description
+    product.price = price
+    product.quantity = quantity
 
-    db.session.add(new_product)
     db.session.commit()
-    return product_schema.jsonify(new_product)
-
+    return product_schema.jsonify(product)
 
 # get a list containing all products
 @app.route('/products', methods=['GET'])
