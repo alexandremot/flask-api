@@ -1,6 +1,7 @@
 {
-	"name": "Product one",
-	"description": "This is product one",
-	"price": 350.00,
-	"quantity": 100
+	"mesa": "2",
+	"pedido": "x-bacon",
+	"quantidade": 5,
+	"valor": 20.00,
+	"atendente": "Ale"
 }

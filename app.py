@@ -5,7 +5,7 @@ from flask_marshmallow import Marshmallow
 import os
 
 
-# initialize app
+# inicializa app
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,97 +13,98 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(
                                          basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# initialize database
+# inicializa database
 db = SQLAlchemy(app)
-
-# initialize marshmallow
+# inicializa marshmallow
 marshmallow = Marshmallow(app)
 
 
-# product class/model
-class Product(db.Model):
+# class/model pedido
+class Pedido(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True)
-    description = db.Column(db.String(200))
-    price = db.Column(db.Float)
-    quantity = db.Column(db.Integer)
+    mesa = db.Column(db.String(3))
+    pedido = db.Column(db.String(200))
+    quantidade = db.Column(db.Integer)
+    valor = db.Column(db.Float)
+    atendente = db.Column(db.String(100))
 
-    def __init__(self, name, description, price, quantity):
-        self.name = name
-        self.description = description
-        self.price = price
-        self.quantity = quantity
+    def __init__(self, mesa, pedido, quantidade, valor, atendente):
+        self.mesa = mesa
+        self.pedido = pedido
+        self.quantidade = quantidade
+        self.valor = valor
+        self.atendente = atendente
 
 
-# product schema
-class ProductSchema(marshmallow.Schema):
+# schema pedido
+class PedidoSchema(marshmallow.Schema):
     class Meta:
-        fields = ('id', 'name', 'description', 'price', 'quantity')
+        fields = ('id', 'mesa', 'pedido', 'quantidade', 'valor', 'atendente')
 
 
-# initialize schema
-product_schema = ProductSchema()
-products_schema = ProductSchema(many=True)
+# inicializa schema pedido
+pedido_schema = PedidoSchema()
+pedidos_schema = PedidoSchema(many=True)
 
-# create a product
-@app.route('/product', methods=['POST'])
-def add_product():
-    # parameters
-    name = request.json['name']
-    description = request.json['description']
-    price = request.json['price']
-    quantity = request.json['quantity']
-    # create a product object
-    new_product = Product(name, description, price, quantity)
-    # submit to the sql data
-    db.session.add(new_product)
+# gera/inclui um pedido
+@app.route('/pedido', methods=['POST'])
+def inclui_pedido():
+    mesa = request.json['mesa']
+    pedido = request.json['pedido']
+    quantidade = request.json['quantidade']
+    valor = request.json['valor']
+    atendente = request.json['atendente']
+
+    novo_pedido = Pedido(mesa, pedido, quantidade, valor, atendente)
+    db.session.add(novo_pedido)
     db.session.commit()
-    return product_schema.jsonify(new_product)
+    return pedido_schema.jsonify(novo_pedido)
 
 
-# update a product
-@app.route('/product/<id>', methods=['PUT'])
-def update_product(id):
-    product = Product.query.get(id)
+# atualiza/corrige pedido
+@app.route('/pedido/<id>', methods=['PUT'])
+def atualiza_pedido(id):
+    pedido = Pedido.query.get(id)
 
-    name = request.json['name']
-    description = request.json['description']
-    price = request.json['price']
-    quantity = request.json['quantity']
+    mesa_atualizada = request.json['mesa']
+    pedido_atualizado = request.json['pedido']
+    quantidade_atualizada = request.json['quantidade']
+    valor_atualizado = request.json['valor']
+    atendente_atualizado = request.json['atendente']
 
-    product.name = name
-    product.description = description
-    product.price = price
-    product.quantity = quantity
+    pedido.mesa = mesa_atualizada
+    pedido.pedido = pedido_atualizado
+    pedido.quantidade = quantidade_atualizada
+    pedido.valor = valor_atualizado
+    pedido.atendente = atendente_atualizado
 
     db.session.commit()
-    return product_schema.jsonify(product)
+    return pedido_schema.jsonify(pedido)
 
-# get a list containing all products
-@app.route('/products', methods=['GET'])
-def get_products():
-    all_products = Product.query.all()
-    result = products_schema.dump(all_products)
-    return jsonify(result)
+# obtém a relação de todos os pedidos
+@app.route('/pedidos', methods=['GET'])
+def obtem_pedidos():
+    relacao_de_pedidos = Pedido.query.all()
+    resultado = pedidos_schema.dump(relacao_de_pedidos)
+    return jsonify(resultado)
 
-# get single product
-@app.route('/product/<id>', methods=['GET'])
-def get_product(id):
-    just_one_product = Product.query.get(id)
-    result = product_schema.jsonify(just_one_product)
-    return result
+# obtém os dados de um pedido específico
+@app.route('/pedido/<id>', methods=['GET'])
+def obtem_pedido(id):
+    dados_do_pedido = Pedido.query.get(id)
+    resultado = pedido_schema.jsonify(dados_do_pedido)
+    return resultado
 
-# delete a product
-@app.route('/product/<id>', methods=['DELETE'])
-def delete_product(id):
-    product_to_delete = Product.query.get(id)
-    db.session.delete(product_to_delete)
+# deleta um pedido
+@app.route('/pedido/<id>', methods=['DELETE'])
+def exclui_pedido(id):
+    pedido_a_excluir = Pedido.query.get(id)
+    db.session.delete(pedido_a_excluir)
     db.session.commit()
-    result = product_schema.jsonify(product_to_delete)
-    return result
+    resultado = pedido_schema.jsonify(pedido_a_excluir)
+    return resultado
 
 
-# run server
+# inicializa app
 if __name__ == '__main__':
     app.run(debug=True)
