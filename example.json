@@ -1,6 +1,6 @@
 {
-	"mesa": "2",
-	"pedido": "x-bacon",
+	"mesa": 1,
+	"pedido": 101,
 	"quantidade": 5,
 	"valor": 20.00,
 	"atendente": "Ale"

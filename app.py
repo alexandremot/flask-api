@@ -22,8 +22,8 @@ marshmallow = Marshmallow(app)
 # class/model pedido
 class Pedido(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    mesa = db.Column(db.String(3))
-    pedido = db.Column(db.String(200))
+    mesa = db.Column(db.Integer)
+    pedido = db.Column(db.Integer)
     quantidade = db.Column(db.Integer)
     valor = db.Column(db.Float)
     atendente = db.Column(db.String(100))
