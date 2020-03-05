@@ -2,14 +2,14 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-import psycopg2
+import pymysql
 
 
 # inicializa app
 app = Flask(__name__)
 
 # inicializa database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/hotel'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/hotel'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # cria um objeto database
@@ -23,7 +23,7 @@ marshmallow = Marshmallow(app)
 class Pedido(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mesa = db.Column(db.Integer)
-    pedido = db.Column(db.String)
+    pedido = db.Column(db.String(3))
     quantidade = db.Column(db.Integer)
     atendente = db.Column(db.String(100))
 

@@ -11,6 +11,9 @@ flask-sqlalchemy = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
 psycopg2 = "*"
+pymysql = "*"
+mysqldb = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.7"
